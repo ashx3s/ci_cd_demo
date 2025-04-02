@@ -14,7 +14,7 @@ jobs:
     steps:
       # develop branch
       - name: Checkout develop branch
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
         with:
           ref: develop
       # set up node
@@ -35,7 +35,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: update dependencies and fix vulnerabilities to develop branch"
-          committer: Github <noreply@github.com>
+          committer: GitHub <noreply@github.com>
           author: ${{ github.actor}}
           signoff: false
           branch: chore/update-deps-develop
