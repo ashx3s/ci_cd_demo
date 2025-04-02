@@ -22,3 +22,4 @@ This repo shows a basic install dependencies workflow as well as an update depen
 - Set to run weekly at 2 am or when ran by command in the github actions gui
 - update naming conventions
 - did not need matrix as this will run the updates a bunch of times which probably isn't needed
+- permissions:
