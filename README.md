@@ -27,3 +27,4 @@ This repo shows a basic install dependencies workflow as well as an update depen
 - Create pull request uses peter-evans
   - pr gets a token for temp access, creates a message and temp branch etc
   - peter-evans/create-pull-request is a popular action
+- **Point of interest**: review the branch where this workflow was initially set up and then the changes in main. now if you look at the **run workflow** button in the actions tab, you can select with branch to run the workflow from
