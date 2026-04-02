@@ -1,35 +1,44 @@
-name: Update Dependencies
+name: Update Dependencies & Fix Vulnerabilities
 on:
   schedule:
     - cron: "0 2 * * 1"
   workflow_dispatch:
-
 jobs:
   update-deps:
-    name: Update Dependencies
+    name: Update Dependencies & Fix Vulnerabilities
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
     steps:
-      # develop branch
       - name: Checkout develop branch
         uses: actions/checkout@v4
         with:
           ref: develop
-      # set up node
+
       - name: Use Node.js 22.x
         uses: actions/setup-node@v4
         with:
           node-version: "22.x"
           cache: "npm"
-      # Make sure we have a clean Install First
+
       - name: Install Dependencies
         run: npm ci
-      # fix vulnerabilities
-      - name: Check for and Fix Vulnerabilities
+
+      - name: Fix Vulnerabilities
         run: npm audit fix
-      # Create a pull request to the develop branch
+
+      # Verify the fix actually resolved issues at or above moderate severity.
+      # If unfixable vulnerabilities remain, the workflow fails here
+      # and no PR is created with broken or insecure code.
+      - name: Verify Audit is Clean
+        run: npm audit --audit-level=moderate
+
+      # Run tests before opening the PR so the automation
+      # does the verification instead of the reviewer.
+      - name: Run Tests
+        run: npm test --if-present
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
@@ -44,6 +53,6 @@ jobs:
           title: "[Develop] chore: Update Dependencies & Fix Vulnerabilities"
           body: |
             Automated dependency update run by GitHub Actions targeting `develop`.
-
             Updates dependencies based on `npm audit fix`.
-            Please review changes and ensure tests pass before merging into `develop`.
+            Audit verified clean at `moderate` level or above.
+            Tests passed before this PR was opened.

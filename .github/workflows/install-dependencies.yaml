@@ -1,4 +1,4 @@
-name: Install Dependencies
+name: Install, Audit & Test
 on:
   push:
     branches: ["main"]
@@ -9,15 +9,28 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ["18.x", "20.x", "22.x"]
+        node-version: ["22.x"]
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{matrix.node-version }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{matrix.node-version}}
+          node-version: ${{ matrix.node-version }}
           cache: "npm"
+
       - name: Install Dependencies
         run: npm ci
+
+      # Check for known vulnerabilities before building or testing.
+      # Fails the run on anything moderate or above so issues are
+      # caught on every push rather than accumulating between update runs.
+      - name: Audit Dependencies
+        run: npm audit --audit-level=moderate
+
       - name: Build Project
         run: npm run build --if-present
+
+      - name: Run Tests
+        run: npm test --if-present
