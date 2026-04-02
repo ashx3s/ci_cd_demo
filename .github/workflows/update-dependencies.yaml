@@ -26,7 +26,10 @@ jobs:
         run: npm ci
 
       - name: Fix Vulnerabilities
-        run: npm audit fix
+        # npm audit fix exits 1 when some vulnerabilities can't be auto-fixed
+        # (they'd need --force / breaking changes). That's expected — let it run
+        # and use the "Verify Audit is Clean" step below as the real gate.
+        run: npm audit fix || true
 
       # Verify the fix actually resolved issues at or above moderate severity.
       # If unfixable vulnerabilities remain, the workflow fails here
